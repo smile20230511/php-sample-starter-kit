@@ -1,0 +1,5 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine on
+    RewriteRule ^edit/\d+$ edit.php
+    RewriteRule ^delete/\d+$ delete.php
+</IfModule>

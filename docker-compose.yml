@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+  web:
+    build: .
+    volumes:
+      - ".:/var/www"
+    privileged: true
+    ports:
+      - "8080:80"
+    links:
+      - db
+
+  db:
+    image: mysql:8
+    volumes:
+      - mysql-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: sample
+      TZ: Asia/Tokyo
+    ports:
+      - "13307:3306"
+
+volumes:
+  mysql-data:

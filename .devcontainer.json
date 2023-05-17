@@ -1,0 +1,7 @@
+{
+    "name": "web",
+    "dockerComposeFile": ["./docker-compose.yml"],
+    "service": "web",
+    "shutdownAction": "none",
+    "workspaceFolder": "/var/www/html"
+}
