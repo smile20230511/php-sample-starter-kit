@@ -1,33 +1,10 @@
 <?php
-
-/*
-$mysqli = new mysqli("host", "user", "password", "database");
-	if ($mysqli->connect_errno)
-	echo "Failed to connect to MySQL: " . $mysqli->connect_error;
-
-	$mysqli->set_charset("utf-8"); // 文字化け防止
-
-	$res = $mysqli->query("SELECT 'choices to please everybody.' AS _msg FROM DUAL"); // クエリの発行
-	$row = $res->fetch_assoc(); // 結果の行を連想配列で取得
-	echo $row['_msg'];
-
-	$res->close(); // 結果セットを開放
-	$mysqli->close();
-*/
 // POST のときはデータの投入を実行
 if ($_SERVER['REQUEST_METHOD'] === "GET") {
 
     // データベースへの接続
     $link = mysqli_connect('db', 'root', 'secret', 'sample');
 
-    /*
-    
-    // ワンタイムトークンの一致を確認
-    if (isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-    // トークンが一致しなかった場合
-    die('データベースの接続に失敗しました。');
-    }
-    */
     if ($link == null) {
         die("データベースの接続に失敗しました。");
     }
@@ -71,7 +48,6 @@ if ($_SERVER['REQUEST_METHOD'] === "GET") {
                         <td><?php echo $_GET['id']; ?></td>
                         <td><?php echo $_GET['name']; ?>
                         </td>
-                        <!-- <td><?php echo $_GET['participate_id']; ?></td> -->
                         <td><?php
                             if ($_GET['participate_id'] == 0) {
                                 echo "参加";
@@ -82,8 +58,6 @@ if ($_SERVER['REQUEST_METHOD'] === "GET") {
                             }
                             ?></td>
                         <td><?php echo $_GET['comment']; ?></td>
-
-                        <!-- <td><a href = "edit/$_GET['id']">編集</a> <a href = "delete.php">削除</a></td> -->
                         <td>
                             <form action="delete/<?= $_GET['id'] ?>" method="post" name="a_form<?= $_GET['id'] ?>">
                                 <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>" />

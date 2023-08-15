@@ -25,86 +25,37 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
         //氏名
         if (empty($_POST['name'])) {
             $name_error1 = '氏名は必須項目です。';
-            //return;
         } elseif (mb_strlen($_POST['name']) > 20) {
             $name_error2 = 'ユーザー名は20文字以内で入力してください。';
-            //$name_value = '';
         }
         //コメント
         if ($_POST['comment'] != null && mb_strlen($_POST['comment']) > 5) {
             $comment_errors = 'コメントは100文字以内で入力してください。';
-            //$comment_value = '';
         }
-        // $name_value = '';
-        // $comment_value = '';
     }
 
-    /*
-    // エラーがある場合の処理
-    if (!empty($errors)) {
-        foreach ($errors as $error) {
-            echo $error . '<br>';
-            echo "<p style='color: red;'>{$error}</p>";
-        }
-    } else {
-        // エラーがない場合の処理
-        // ホーム画面にリダイレクト
-        header('Location: http://' . $_SERVER['HTTP_HOST']);
-    }
-    */
     if (empty($name_error1) && empty($name_error2) && empty($comment_errors)) {
         //SQL インジェクション対策
         $mysqli = new mysqli('db', 'root', 'secret', 'sample');
 
-        //session_start();
         // ワンタイムトークンの一致を確認
         if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
             echo $_POST['csrf_token'];
             // トークンが一致しなかった場合
             die('データベースの接続に失敗しました。');
         }
-        /*
-        // 使用する変数を初期化
-        $name = '';
-        $comment = '';
-        */
-
-        // SQL文を作成します（パラメータはありません）
+        // SQL文を作成（パラメータはなし）
         $stmt = $mysqli->prepare("INSERT INTO questionnaire VALUES (?, ?, ?, ?)");
-        // ここでパラメータに実際の値となる変数を入れます。
+        // ここでパラメータに実際の値となる変数を入れる。
         // isisは、それぞれパラメータの型（int, string, int, string）を指定。
         $stmt->bind_param('isis', $_POST['id'], $_POST['name'], $_POST['participate_id'], $_POST['comment']);
-        /* プリペアドステートメントを実行します */
+        /* プリペアドステートメントを実行 */
         $stmt->execute();
-        /* ステートメントと接続を閉じます */
+        /* ステートメントと接続を閉じる */
         $stmt->close();
 
-        /* 接続を閉じます */
+        /* 接続を閉じる */
         $mysqli->close();
-        /*
-        // // データベースへの接続
-        // $link = mysqli_connect('db', 'root', 'secret', 'sample');
-        if ($mysqli == null) {
-            die("データベースの接続に失敗しました。");
-        }
-        */
-        /* 
-        //CSRF対策
-        // セッションの利用を開始
-        session_start();
-
-        // ワンタイムトークン生成
-        $toke_byte = openssl_random_pseudo_bytes(16);
-        $csrf_token = bin2hex($toke_byte);
-
-        // トークンをセッションに保存
-        $_SESSION['csrf_token'] = $csrf_token; */
-
-        // データの投入
-        // $sql = "INSERT INTO `questionnaire` (`name`, `participate_id`, `comment`) VALUES ('"
-        //     . $_POST['name'] . "', " . $_POST['participate_id'] . ", '" . $_POST['comment'] . "');"; 
-        // mysqli_query($link, $sql);
-
         //ホーム画面にリダイレクト
         header('Location: http://' . $_SERVER['HTTP_HOST']);
     }
@@ -167,8 +118,6 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
                         </div>
                         <!-- CSRF対策の追加 -->
                         <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>" />
-                        <!-- <input type="text" name="name" value="<?php if (!empty($comment_errors)) echo $name_value; ?>">
-                            <input type="text" name="comment" value="<?php if (!empty($comment_errors)) echo $comment_value; ?>"> -->
                         <div>
                             <a href="/" class="btn btn-secondary mt-3">戻る</a>
                             <button type="submit" class="btn btn-secondary mt-3">送信</button>
@@ -180,12 +129,8 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
                 <?php if (!empty($name_error1) && !empty($name_error2) && !empty($comment_errors)) {
                     $name_value = $_POST['name'];
                     $comment_value = $_POST['comment'];
-                    // var_dump($_POST['name']);
-                    // var_dump($_POST['comment']);
                 }
                 ?>
-                <!-- name value:<?php echo $name_value; ?>
-                    comment value:<?php echo $comment_value; ?> -->
             </p>
         </div>
     </div>

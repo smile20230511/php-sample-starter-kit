@@ -8,18 +8,8 @@ if ($_SERVER['REQUEST_METHOD'] === "GET") {
     // トークンをセッションに保存
     $_SESSION['csrf_token'] = $csrf_token;
 }
-/* $url = "http://example.com/i/am/file.php";
-$keys = parse_url($url); //パース処理
-$path = explode("/", $keys['path']); //分割処理
-$last = end($path); //最後の要素を取得
-echo $last; */
-//echo "a";
 $path = explode("/", $_SERVER['REQUEST_URI']); //分割処理
 $last = end($path); //最後の要素を取得
-//echo $last . PHP_EOL;
-//var_dump($last);
-/*$last = key(explode("/", $_SERVER['REQUEST_URI'])); //最後の要素を取得
-echo $last; */
 
 $sql = "SELECT * FROM questionnaire WHERE id = $last";
 
@@ -38,10 +28,6 @@ $target = $result->fetch_assoc();
 if ($data == null) {
     die("このページは存在しません。");
 }
-// $_GET;
-// foreach ($data as $da) {
-//     $_GET = $da;
-// }
 $data['name'];
 $data['participate_id'];
 $data['comment'];
@@ -60,7 +46,6 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
         //氏名
         if (empty($_POST['name'])) {
             $name_error1 = '氏名は必須項目です。';
-            //return;
         } elseif (mb_strlen($_POST['name']) > 20) {
             $name_error2 = 'ユーザー名は20文字以内で入力してください。';
         }
@@ -79,37 +64,18 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
             die('データベースの接続に失敗しました。');
         }
 
-        // SQL文を作成します（パラメータはありません）
+        // SQL文を作成（パラメータはなし）
         $stmt = $mysqli->prepare("UPDATE questionnaire SET name = ?, participate_id = ?, comment = ? WHERE id = ?");
-        // ここでパラメータに実際の値となる変数を入れます。
-        // sssdのところは、それぞれパラメータの型（string, string, string, double）を指定しています。
+        // ここでパラメータに実際の値となる変数を入れる。
+        // sssdのところは、それぞれパラメータの型（string, string, string, double）を指定。
         $stmt->bind_param('sisi', $_POST['name'], $_POST['participate_id'], $_POST['comment'], $last);
-        /* プリペアドステートメントを実行します */
+        /* プリペアドステートメントを実行 */
         $stmt->execute();
-        /* ステートメントと接続を閉じます */
+        /* ステートメントと接続を閉じる */
         $stmt->close();
 
-        /* 接続を閉じます */
+        /* 接続を閉じる */
         $mysqli->close();
-        // // データベースへの接続
-        // $link = mysqli_connect('db', 'root', 'secret', 'sample');
-        // if ($mysqli == null) {
-        //     die("データベースの接続に失敗しました。");
-        // }
-
-        /*
-    // データベースへの接続
-    $link = mysqli_connect('db', 'root', 'secret', 'sample');
-    if ($link == null) {
-        die("データベースの接続に失敗しました。");
-    }
-    
-    // データの更新
-    $sql = "UPDATE questionnaire SET `name` = '" . $_POST['name'] . "', `comment` = '" . $_POST['comment'] . "',
-    `participate_id` = '" . $_POST['participate_id']."' WHERE id = $last;";
-
-    mysqli_query($link, $sql);
-    */
         // ホーム画面にリダイレクト
         header('Location: http://' . $_SERVER['HTTP_HOST']);
     }
@@ -144,7 +110,6 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
                 <form method="POST">
                     <div>
                         <label for="name">氏名</label>
-                        <!-- <input type="text" value="こんにちは" name="name" class="form-control mb-3" /> -->
                         <input type="text" value="<?php if (empty($name_value)) echo $data['name'] ?><?php if (!empty($name_value)) echo $name_value; ?>" name="name" class="form-control <?php if (!empty($name_error1 || $name_error2)) echo 'is-invalid'; ?>">
                         <div id="nameFeedback" class="invalid-feedback">
                             <?php if (!empty($name_error1)) {
