@@ -43,25 +43,25 @@ if ($_SERVER['REQUEST_METHOD'] === "GET") {
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($data as $_GET) : ?>
+                <?php foreach ($data as $aquire) : ?>
                     <tr>
-                        <td><?php echo $_GET['id']; ?></td>
-                        <td><?php echo $_GET['name']; ?>
+                        <td><?php echo $aquire['id']; ?></td>
+                        <td><?php echo $aquire['name']; ?>
                         </td>
                         <td><?php
-                            if ($_GET['participate_id'] == 0) {
+                            if ($aquire['participate_id'] == 0) {
                                 echo "参加";
-                            } elseif ($_GET['participate_id'] == 1) {
+                            } elseif ($aquire['participate_id'] == 1) {
                                 echo "不参加";
                             } else {
-                                echo $_GET['participate_id'];
+                                echo $aquire['participate_id'];
                             }
                             ?></td>
-                        <td><?php echo $_GET['comment']; ?></td>
+                        <td><?php echo $aquire['comment']; ?></td>
                         <td>
-                            <form action="delete/<?= $_GET['id'] ?>" method="post" name="a_form<?= $_GET['id'] ?>">
+                            <form action="delete/<?= $aquire['id'] ?>" method="post" name="a_form<?= $aquire['id'] ?>">
                                 <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>" />
-                            </form><a href="edit/<?= $_GET['id'] ?>">編集</a> <a href="#" onclick="document.a_form<?= $_GET['id'] ?>.submit();">削除</a>
+                            </form><a href="edit/<?= $aquire['id'] ?>">編集</a> <a href="#" onclick="document.a_form<?= $aquire['id'] ?>.submit();">削除</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>

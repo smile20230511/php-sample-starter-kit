@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
             $name_error2 = 'ユーザー名は20文字以内で入力してください。';
         }
         //コメント
-        if ($_POST['comment'] != null && mb_strlen($_POST['comment']) > 5) {
+        if ($_POST['comment'] != null && mb_strlen($_POST['comment']) > 100) {
             $comment_errors = 'コメントは100文字以内で入力してください。';
         }
     }
@@ -65,10 +65,10 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
     // トークンをセッションに保存
     $_SESSION['csrf_token'] = $csrf_token;
 
-    $name_value = $_POST['name'];
+    $name_value = htmlspecialchars($_POST['name']);
     $participate_id_value =
         $_POST['participate_id'];
-    $comment_value = $_POST['comment'];
+    $comment_value = htmlspecialchars($_POST['comment']);
 }
 ?>
 <!DOCTYPE html>
@@ -123,17 +123,9 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
                             <button type="submit" class="btn btn-secondary mt-3">送信</button>
                         </div>
                     </div>
+                </form>
             </div>
-            </form>
-            <p>
-                <?php if (!empty($name_error1) && !empty($name_error2) && !empty($comment_errors)) {
-                    $name_value = $_POST['name'];
-                    $comment_value = $_POST['comment'];
-                }
-                ?>
-            </p>
         </div>
-    </div>
     </div>
 </body>
 

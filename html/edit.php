@@ -28,12 +28,10 @@ $target = $result->fetch_assoc();
 if ($data == null) {
     die("このページは存在しません。");
 }
-$data['name'];
-$data['participate_id'];
-$data['comment'];
-
+//$first = true;
 // POST のときはデータの投入を実行
 if ($_SERVER['REQUEST_METHOD'] === "POST") {
+
     $name_value = $_POST['name'];
     $participate_id_value =
         $_POST['participate_id'];
@@ -46,12 +44,15 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
         //氏名
         if (empty($_POST['name'])) {
             $name_error1 = '氏名は必須項目です。';
+            $name_value = ''; // フォームが空で送信された場合、入力値も空にする
         } elseif (mb_strlen($_POST['name']) > 20) {
             $name_error2 = 'ユーザー名は20文字以内で入力してください。';
         }
         //コメント
-        if ($_POST['comment'] != null && mb_strlen($_POST['comment']) > 5) {
+        if ($_POST['comment'] != null && mb_strlen($_POST['comment']) > 100) {
             $comment_errors = 'コメントは100文字以内で入力してください。';
+        } elseif (empty($_POST['comment'])) {
+            $comment_value = ''; // フォームが空で送信された場合、入力値も空にする
         }
     }
     if (empty($name_error1) && empty($name_error2) && empty($comment_errors)) {
@@ -61,13 +62,13 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
         // ワンタイムトークンの一致を確認
         if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
             // トークンが一致しなかった場合
-            die('データベースの接続に失敗しました。');
+            die('トークンが一致しません。');
         }
 
         // SQL文を作成（パラメータはなし）
         $stmt = $mysqli->prepare("UPDATE questionnaire SET name = ?, participate_id = ?, comment = ? WHERE id = ?");
         // ここでパラメータに実際の値となる変数を入れる。
-        // sssdのところは、それぞれパラメータの型（string, string, string, double）を指定。
+        // sisiのところは、それぞれパラメータの型（string, int, string, int）を指定。
         $stmt->bind_param('sisi', $_POST['name'], $_POST['participate_id'], $_POST['comment'], $last);
         /* プリペアドステートメントを実行 */
         $stmt->execute();
@@ -85,10 +86,16 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
     // トークンをセッションに保存
     $_SESSION['csrf_token'] = $csrf_token;
 
-    $name_value = $_POST['name'];
+    $name_value = htmlspecialchars($_POST['name']);
     $participate_id_value =
         $_POST['participate_id'];
-    $comment_value = $_POST['comment'];
+    $comment_value = htmlspecialchars($_POST['comment']);
+    echo $data['name'];
+    echo $_POST['name'];
+    echo $name_value;
+    echo $_POST['comment'];
+    echo $comment_value;
+    //$first = false;
 }
 ?>
 <!DOCTYPE html>
@@ -110,7 +117,8 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
                 <form method="POST">
                     <div>
                         <label for="name">氏名</label>
-                        <input type="text" value="<?php if (empty($name_value)) echo $data['name'] ?><?php if (!empty($name_value)) echo $name_value; ?>" name="name" class="form-control <?php if (!empty($name_error1 || $name_error2)) echo 'is-invalid'; ?>">
+                        <input type="text" value="<?php if (empty($name_error1) && empty($name_error2) && empty($comment_errors)) echo htmlspecialchars($data['name']);
+                                                    else echo $name_value; ?>" name="name" class="form-control <?php if (!empty($name_error1) || !empty($name_error2)) echo 'is-invalid'; ?>">
                         <div id="nameFeedback" class="invalid-feedback">
                             <?php if (!empty($name_error1)) {
                                 echo $name_error1;
@@ -130,7 +138,8 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
                     </div>
                     <div>
                         <label for="comment">コメント:</label>
-                        <textarea name="comment" class="form-control <?php if (!empty($comment_errors)) echo 'is-invalid'; ?>"><?= $data['comment'] ?><?php if (!empty($comment_errors)) echo $comment_value; ?></textarea>
+                        <textarea name="comment" class="form-control <?php if (!empty($comment_errors)) echo 'is-invalid'; ?>"><?php if (empty($name_error1) && empty($name_error2) && empty($comment_errors)) echo htmlspecialchars($data['comment']);
+                                                                                                                                else echo $comment_value; ?></textarea>
                         <div id="commentFeedback" class="invalid-feedback">
                             <?php if (!empty($comment_errors)) {
                                 echo $comment_errors;
@@ -145,13 +154,6 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
                         </div>
                     </div>
                 </form>
-                <p>
-                    <?php if (!empty($name_error1) && !empty($name_error2) && !empty($comment_errors)) {
-                        $name_value = $_POST['name'];
-                        $comment_value = $_POST['comment'];
-                    }
-                    ?>
-                </p>
             </div>
         </div>
     </div>
