@@ -28,7 +28,6 @@ $target = $result->fetch_assoc();
 if ($data == null) {
     die("このページは存在しません。");
 }
-//$first = true;
 // POST のときはデータの投入を実行
 if ($_SERVER['REQUEST_METHOD'] === "POST") {
 
@@ -90,12 +89,6 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
     $participate_id_value =
         $_POST['participate_id'];
     $comment_value = htmlspecialchars($_POST['comment']);
-    echo $data['name'];
-    echo $_POST['name'];
-    echo $name_value;
-    echo $_POST['comment'];
-    echo $comment_value;
-    //$first = false;
 }
 ?>
 <!DOCTYPE html>
@@ -126,7 +119,6 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
                             if (!empty($name_error2)) {
                                 echo $name_error2;
                             } ?>
-
                         </div>
                     </div>
                     <div>
